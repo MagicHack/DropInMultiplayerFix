@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
+using RoR2.EntitlementManagement;
 
 namespace DropInMultiplayer
 {
@@ -127,7 +128,7 @@ namespace DropInMultiplayer
             //Step Three: On the instance that isn't hosting, open up the console (ctrl + alt + tilde) and enter the command "connect localhost:7777"
             //DO NOT MAKE A MISTAKE SPELLING THE COMMAND OR YOU WILL HAVE TO RESTART THE CLIENT INSTANCE!!
             //Step Four: Test whatever you were going to test.
-            On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
+            On.RoR2.Networking.NetworkManagerSystem.OnClientConnect += (self, user, t) => { };
 #endif
         }
 
@@ -275,7 +276,6 @@ namespace DropInMultiplayer
 
         private void JoinAs(NetworkUser user, string characterName, string username)
         {
-
             if (!DropInConfig.JoinAsEnabled)
             {
                 Logger.LogWarning("Join_As disabled. Returning...");
@@ -322,6 +322,15 @@ namespace DropInMultiplayer
             {
                 AddChatMessage($"{characterName} not found. Availible survivors are: {string.Join(", ", BodyHelper.GetSurvivorDisplayNames())} (or use Random)");
                 Logger.LogWarning("Sent message to player informing them that what they requested to join as does not exist. Also bodyPrefab does not exist, returning!");
+                return;
+            }
+
+            // TODO : check if user has entitlement and potentially fix connecting player wrongly not having entitlement
+            // if player tries to join as dlc char (currently bugged)
+            if (bodyPrefab == BodyHelper.FindBodyPrefab("Railgunner") || bodyPrefab == BodyHelper.FindBodyPrefab("「V??oid Fiend』"))
+            {
+                Logger.LogInfo("Player tried to join as dlc survivor");
+                AddChatMessage($"Sorry {player.userName}! Joining as a DLC1 survivor is currently bugged.");
                 return;
             }
             

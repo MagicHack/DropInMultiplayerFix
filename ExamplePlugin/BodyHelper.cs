@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using BepInEx.Logging;
 
 namespace DropInMultiplayer
 {
@@ -60,6 +61,10 @@ namespace DropInMultiplayer
             if (characterName.Equals("random", StringComparison.InvariantCultureIgnoreCase))
             {
                 return SurvivorBodies.ElementAt(_rand.Next(SurvivorBodies.Count())).bodyPrefab;
+            } else if(characterName.Replace("?", "").Equals("VoidFiend", StringComparison.InvariantCultureIgnoreCase))
+            {
+                // TODO : probably a better way to do this
+                characterName = "「V??oid Fiend』";
             }
 
             return LookupSurvior(characterName)?.bodyPrefab;

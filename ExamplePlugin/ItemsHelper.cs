@@ -34,7 +34,15 @@ namespace DropInMultiplayer
                 case ItemTier.Boss:
                     return HandleWithScrap(Run.instance.availableBossDropList, RoR2Content.Items.ScrapYellow);
                 case ItemTier.Lunar:
-                    return Run.instance.availableLunarDropList;
+                    return Run.instance.availableLunarItemDropList;
+                case ItemTier.VoidTier1:
+                    return Run.instance.availableVoidTier1DropList;
+                case ItemTier.VoidTier2:
+                    return Run.instance.availableVoidTier2DropList;
+                case ItemTier.VoidTier3:
+                    return Run.instance.availableVoidTier3DropList;
+                case ItemTier.VoidBoss:
+                    return Run.instance.availableVoidBossDropList;
                 default:
                     throw new Exception($"ItemTier {itemTier} has not been handled");
             }
@@ -124,6 +132,11 @@ namespace DropInMultiplayer
             {
                 AddToItemsToMatch(targetInventory, otherPlayerInventories, ItemTier.Boss);
             }
+            // TODO : add void items preference (each tier + boss or all tiers and boss)
+            AddToItemsToMatch(targetInventory, otherPlayerInventories, ItemTier.VoidTier1);
+            AddToItemsToMatch(targetInventory, otherPlayerInventories, ItemTier.VoidTier2);
+            AddToItemsToMatch(targetInventory, otherPlayerInventories, ItemTier.VoidTier3);
+            AddToItemsToMatch(targetInventory, otherPlayerInventories, ItemTier.VoidBoss);
         }
 
         private static IEnumerable<ItemIndex> GetItemIndicesByNames(IEnumerable<string> itemNames)
