@@ -19,9 +19,9 @@ namespace DropInMultiplayer
     [R2APISubmoduleDependency(nameof(CommandHelper))]
     public class DropInMultiplayer : BaseUnityPlugin
     {
-        const string guid = "com.niwith.DropInMultiplayer";
+        const string guid = "com.magichack.DropInMultiplayer";
         const string modName = "Drop In Multiplayer";
-        const string version = "1.0.19";
+        const string version = "1.0.0";
 
         public DropInMultiplayerConfig DropInConfig { get; private set; }
         public static DropInMultiplayer Instance { get; private set; }
@@ -325,13 +325,18 @@ namespace DropInMultiplayer
                 return;
             }
 
-            // TODO : check if user has entitlement and potentially fix connecting player wrongly not having entitlement
+            // TODO : potentially fix connecting player wrongly not having entitlement
             // if player tries to join as dlc char (currently bugged)
             if (bodyPrefab == BodyHelper.FindBodyPrefab("Railgunner") || bodyPrefab == BodyHelper.FindBodyPrefab("「V??oid Fiend』"))
             {
-                Logger.LogInfo("Player tried to join as dlc survivor");
-                AddChatMessage($"Sorry {player.userName}! Joining as a DLC1 survivor is currently bugged.");
-                return;
+                // EntitlementC
+                var entitlementIndex = EntitlementCatalog.FindEntitlementIndex("entitlementDLC1");
+                if(!EntitlementManager.networkUserEntitlementTracker.UserHasEntitlement(player, EntitlementCatalog.GetEntitlementDef(entitlementIndex)))
+                {
+                    Logger.LogInfo("Player tried to join as dlc survivor");
+                    AddChatMessage($"Sorry {player.userName}! Joining as a DLC1 survivor is currently bugged (or you do not own the dlc).");
+                    return;
+                }
             }
             
             if (player.master == null) // If the player is joining for the first time
