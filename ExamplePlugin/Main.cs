@@ -19,7 +19,7 @@ namespace DropInMultiplayer
     [R2APISubmoduleDependency(nameof(CommandHelper))]
     public class DropInMultiplayer : BaseUnityPlugin
     {
-        const string guid = "com.magichack.DropInMultiplayer";
+        const string guid = "com.magichack.DropInMultiplayerFix";
         const string modName = "Drop In Multiplayer";
         const string version = "1.0.0";
 
@@ -183,6 +183,7 @@ namespace DropInMultiplayer
                 var message = DropInConfig.CustomWelcomeMessage;
                 if (message.Length > 1000)
                 {
+                    Logger.LogInfo("Welcome message is too long");
                     return;
                 }
                 message = message.ReplaceOnce("{username}", self.userName);
@@ -329,12 +330,13 @@ namespace DropInMultiplayer
             // if player tries to join as dlc char (currently bugged)
             if (bodyPrefab == BodyHelper.FindBodyPrefab("Railgunner") || bodyPrefab == BodyHelper.FindBodyPrefab("「V??oid Fiend』"))
             {
-                // EntitlementC
+                // Entitlement check
                 var entitlementIndex = EntitlementCatalog.FindEntitlementIndex("entitlementDLC1");
                 if(!EntitlementManager.networkUserEntitlementTracker.UserHasEntitlement(player, EntitlementCatalog.GetEntitlementDef(entitlementIndex)))
                 {
-                    Logger.LogInfo("Player tried to join as dlc survivor");
-                    AddChatMessage($"Sorry {player.userName}! Joining as a DLC1 survivor is currently bugged (or you do not own the dlc).");
+                    EntitlementManager.networkUserEntitlementTracker.UpdateAllUserEntitlements();
+                    Logger.LogInfo("Player tried to join as dlc survivor but could not verify entitlement");
+                    AddChatMessage($"Sorry {player.userName}! Late joining as a DLC1 survivor is currently bugged (or you do not own the dlc).");
                     return;
                 }
             }
